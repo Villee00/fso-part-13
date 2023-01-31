@@ -5,7 +5,6 @@ const sequelize = new Sequelize(process.env.DATABASE_URL)
 const main = async () => {
     try {
         await sequelize.authenticate()
-        console.log('Connection has been established successfully.')
         const blogs = await sequelize.query("SELECT * FROM blogs", {type: QueryTypes.SELECT})
         for (const blog of blogs) {
             console.log(`${blog.author}: '${blog.title}', ${blog.likes} likes`)
