@@ -4,7 +4,7 @@ const {Blog} = require('../models')
 router.get('/', async (req, res) => {
     try {
         const blogs = await Blog.findAll()
-        req.send(blogs)
+        res.send(blogs)
     } catch (e) {
         await res.sendStatus(404)
     }
