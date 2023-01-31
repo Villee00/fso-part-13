@@ -19,7 +19,7 @@ router.post('/', async (req, res) => {
     }
 })
 
-router.get('/:id').get(async (req, res) => {
+router.get('/:id', async (req, res) => {
     try {
         const blog = await Blog.findByPk(req.params.id)
         if (blog) {
