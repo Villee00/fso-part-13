@@ -1,4 +1,4 @@
-const {Model, INTEGER, TEXT, NUMBER} = require("sequelize");
+const {Model, INTEGER, TEXT} = require("sequelize");
 const {sequelize} = require('../util/db')
 class Blog extends Model {
 }
@@ -13,7 +13,7 @@ Blog.init({
     }, title: {
         type: TEXT, notNull: true
     }, likes: {
-        type: NUMBER, defaultValue: 0
+        type: INTEGER, defaultValue: 0
     }
 }, {
     sequelize, updatedAt: false, createdAt: false, modelName: "blog"

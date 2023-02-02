@@ -1,23 +1,33 @@
 const router = require('express').Router()
 
-const {Blog} = require('../models')
+const {Blog, User} = require('../models')
+const {verifyToken} = require("../util/db");
 
 blogFinder = async (req, res, next) => {
     req.blog = await Blog.findByPk(req.params.id)
     if (!req.blog) {
         res.status(404).end()
-    }
-    else {
+    } else {
         next()
     }
 }
 router.get('/', async (req, res) => {
-    const blogs = await Blog.findAll()
+    const blogs = await Blog.findAll({
+        attributes: {
+            exclude: ['userId']
+        },
+        include: {
+            model: User,
+            attributes: ['name']
+        }
+    })
     res.send(blogs)
 })
 
-router.post('/', async (req, res) => {
-    const blog = await Blog.create(req.body)
+router.post('/', verifyToken, async (req, res) => {
+    const blog = Blog.build(req.body)
+    blog.userId = req.user.id
+    await blog.save()
     return res.json(blog)
 })
 
@@ -25,9 +35,15 @@ router.get('/:id', blogFinder, async (req, res) => {
     res.send(req.blog.toJSON())
 })
 
-router.delete('/:id', blogFinder, async (req, res) => {
-    await req.blog.destroy()
-    res.status(200).end()
+router.delete('/:id', verifyToken, blogFinder, async (req, res) => {
+    if (req.blog.userId === req.user.id) {
+        await req.blog.destroy()
+        res.status(200).end()
+    } else {
+        return res.status(401).send({
+            error: "User can't delete that blog"
+        })
+    }
 })
 
 router.put('/:id', blogFinder, async (req, res) => {
