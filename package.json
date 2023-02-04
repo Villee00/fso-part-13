@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "deb": "nodemon index.js",
+    "dev": "nodemon index.js",
     "migration:down": "node util/rollback.js"
   },
   "author": "",

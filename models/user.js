@@ -1,4 +1,4 @@
-const {Model,  STRING, INTEGER} = require("sequelize");
+const {Model, STRING, INTEGER} = require("sequelize");
 
 const {sequelize} = require('../util/db')
 
@@ -27,8 +27,9 @@ User.init({
                 msg: 'Validation isEmail on username failed'
             }
         }
-    }
-}, {sequelize, modelName: 'users'})
+    },
+
+}, {sequelize, modelName: 'users', timestamps: true, underscored: true})
 
 
 module.exports = User
