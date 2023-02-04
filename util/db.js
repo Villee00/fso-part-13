@@ -1,6 +1,6 @@
 const {Sequelize} = require("sequelize");
-const {DATABASE_URL, SECRET} = require('./config')
-const jwt = require('jsonwebtoken')
+const {DATABASE_URL} = require('./config')
+const {Umzug, SequelizeStorage} = require("umzug");
 
 
 const sequelize = new Sequelize(DATABASE_URL)
@@ -8,6 +8,7 @@ const sequelize = new Sequelize(DATABASE_URL)
 const connectDatabase = async () => {
     try {
         await sequelize.authenticate()
+        await runMigrations()
         console.log('Database connected')
     } catch (error) {
         console.error('Unable to connect to the database:', error)
@@ -15,23 +16,25 @@ const connectDatabase = async () => {
     }
 }
 
-const verifyToken = (req, res, next) => {
-    const auth = req.headers["authorization"]
-    if (!auth) {
-        res.code(400).json({error: "Authorization failed"})
-    }
-    const token = auth.split(' ')[1]
-
-    try{
-        req.user = jwt.verify(token, SECRET)
-        next()
-    }
-    catch (err){
-        return res.status(401).json({
-            error: 'failed to verify token'
-        })
-    }
+const migrationConf = {
+    migrations: {
+        glob: 'migrations/*.js',
+    },
+    storage: new SequelizeStorage({ sequelize, tableName: 'migrations' }),
+    context: sequelize.getQueryInterface(),
+    logger: console,
+}
+const runMigrations = async () => {
+    const migrator = new Umzug(migrationConf)
+    const migrations = await migrator.up()
+    console.log('Migrations up to date', {
+        files: migrations.map((mig) => mig.name),
+    })
+}
+const rollbackMigration = async () => {
+    await sequelize.authenticate()
+    const migrator = new Umzug(migrationConf)
+    await migrator.down()
 }
 
-
-module.exports = {connectDatabase, sequelize, verifyToken}
+module.exports = {connectDatabase, sequelize, rollbackMigration}

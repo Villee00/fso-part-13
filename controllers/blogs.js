@@ -1,7 +1,7 @@
 const router = require('express').Router()
 
 const {Blog, User} = require('../models')
-const {verifyToken} = require("../util/db");
+const {verifyToken} = require("../util/middleware");
 const {Op} = require("sequelize");
 
 blogFinder = async (req, res, next) => {
