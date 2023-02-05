@@ -3,28 +3,39 @@ const bcrypt = require('bcrypt')
 
 const {User, Blog} = require('../models')
 const {SALT} = require("../util/config");
+const {Op} = require("sequelize");
 
-const findUser = async (req, res, next) => {
-    req.user = await User.findOne({
-        where: {
-            username: req.params.username
-        },
+
+const findUserWithID = async (req, res, next) => {
+    const where = {}
+
+    if(req.query.read){
+        where.read = req.query.read
+    }
+    req.user = await User.findByPk(req.params.id, {
         include: {
             model: Blog,
             as: 'readings',
             through: {
-                attributes: ['read', 'id']
+                attributes: ['read', 'id'],
+                where
             }
         }
     })
 
     if (!req.user) {
-        res.send(404).json({error: 'Not found'})
+        res.status(404).json({error: 'User not found'})
     }
     next()
 }
 
 router.get('/', async (req, res) => {
+    const where = {}
+
+    if (req.query.read) {
+        where.read = req.query.read
+    }
+
     const users = await User.findAll({
         include: [
             {
@@ -35,7 +46,12 @@ router.get('/', async (req, res) => {
                 model: Blog,
                 as: 'readings',
                 through: {
-                    attributes: ['read']
+                    attributes: ['read'],
+                    where: {
+                        read: {
+                            [Op.is]: true
+                        }
+                    }
                 }
             }]
     })
@@ -63,14 +79,16 @@ router.post('/', async (req, res) => {
     }
 })
 
-router.put('/:username', findUser, async (req, res) => {
+router.put('/:id', findUserWithID, async (req, res) => {
     req.user.username = req.body.username
     await req.user.save()
     res.json(req.user)
 })
 
-router.get('/:username', findUser,async (req, res) => {
+router.get('/:id', findUserWithID, async (req, res) => {
+
     res.json(req.user)
 })
+
 
 module.exports = router
