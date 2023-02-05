@@ -9,6 +9,13 @@ const findUser = async (req, res, next) => {
         where: {
             username: req.params.username
         },
+        include: {
+            model: Blog,
+            as: 'readings',
+            through: {
+                attributes: []
+            }
+        }
     })
 
     if (!req.user) {
@@ -26,7 +33,7 @@ router.get('/', async (req, res) => {
             },
             {
                 model: Blog,
-                as: 'readingList',
+                as: 'readings',
                 through: {
                     attributes: ['read']
                 }
@@ -59,6 +66,10 @@ router.post('/', async (req, res) => {
 router.put('/:username', findUser, async (req, res) => {
     req.user.username = req.body.username
     await req.user.save()
+    res.json(req.user)
+})
+
+router.get('/:username', findUser,async (req, res) => {
     res.json(req.user)
 })
 
