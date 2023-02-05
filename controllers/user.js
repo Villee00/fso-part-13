@@ -19,10 +19,18 @@ const findUser = async (req, res, next) => {
 
 router.get('/', async (req, res) => {
     const users = await User.findAll({
-        include: {
-            model: Blog,
-            attributes: ['title', 'url', 'likes']
-        }
+        include: [
+            {
+                model: Blog,
+                attributes: ['title', 'url', 'likes']
+            },
+            {
+                model: Blog,
+                as: 'readingList',
+                through: {
+                    attributes: ['read']
+                }
+            }]
     })
     res.json(users)
 })
