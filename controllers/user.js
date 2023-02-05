@@ -13,7 +13,7 @@ const findUser = async (req, res, next) => {
             model: Blog,
             as: 'readings',
             through: {
-                attributes: []
+                attributes: ['read', 'id']
             }
         }
     })
