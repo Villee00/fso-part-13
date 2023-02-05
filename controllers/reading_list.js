@@ -19,10 +19,9 @@ router.put('/:id', verifyToken, findReadingList, async (req, res) => {
     if(req.user.id !== req.readingList.user_id){
         return res.status(400).json({error: "User is not authenticated to do changes on this readinglist"}).end()
     }
-    const readingList = req.readingList;
-    readingList.read = req.body.read
-    await readingList.save()
-    res.json(readingList)
+    req.readingList.read = req.body.read
+    await req.readingList.save()
+    res.json(req.readingList)
 })
 
 module.exports = router
