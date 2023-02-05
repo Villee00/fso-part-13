@@ -1,4 +1,4 @@
-const {Model, INTEGER,  BOOLEAN} = require("sequelize");
+const {Model, INTEGER, BOOLEAN} = require("sequelize");
 const {sequelize} = require('../util/db')
 
 class Reading_lists extends Model {

@@ -1,4 +1,4 @@
-const {Model, STRING, INTEGER} = require("sequelize");
+const {Model, STRING, INTEGER, BOOLEAN} = require("sequelize");
 
 const {sequelize} = require('../util/db')
 
@@ -28,6 +28,11 @@ User.init({
             }
         }
     },
+    disabled: {
+        type: BOOLEAN,
+        defaultValue: false,
+        notNull: true
+    }
 
 }, {sequelize, modelName: 'users', timestamps: true, underscored: true})
 

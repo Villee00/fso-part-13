@@ -19,11 +19,11 @@ Blog.init({
     year: {
         type: INTEGER,
         validate: {
-            max:  {
+            max: {
                 args: [new Date().getFullYear()],
                 msg: "Year must be smaller than the current year"
             },
-            min:  {
+            min: {
                 args: [1991],
                 msg: "Year must be over 1991"
             }

@@ -9,7 +9,7 @@ const {Op} = require("sequelize");
 const findUserWithID = async (req, res, next) => {
     const where = {}
 
-    if(req.query.read){
+    if (req.query.read) {
         where.read = req.query.read
     }
     req.user = await User.findByPk(req.params.id, {
